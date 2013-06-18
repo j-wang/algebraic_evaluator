@@ -9,6 +9,7 @@ def parse(exp):
 
     Takes a string and returns the evaluated expression as int.
     Uses Shunting-Yard algorithm.
+    Example: parse('1+3*2') => 7
 
     Ugly as sin.
 
@@ -28,9 +29,7 @@ def parse(exp):
             if operator_stack:
                 operator_stack.reverse()
                 for item in operator_stack:
-                    v2 = final_exp.pop()
-                    v1 = final_exp.pop()
-                    final_exp.append(op_convert[item](v1, v2))
+                    pop_and_eval(item)
         else:  # more to go
             _next = post[0]
             if prior:  # prior is not none
@@ -42,13 +41,16 @@ def parse(exp):
                            precedence[operator_stack[-1]] >=
                            precedence[_next]):
                         op = operator_stack.pop()
-                        v2 = final_exp.pop()
-                        v1 = final_exp.pop()
-                        final_exp.append(op_convert[op](v1, v2))
+                        pop_and_eval(op)
                     operator_stack.append(_next)
                     parse_helper(None, post[1:])
             else:
                 parse_helper(int(_next), post[1:])
+
+    def pop_and_eval(op):
+        v2 = final_exp.pop()
+        v1 = final_exp.pop()
+        final_exp.append(op_convert[op](v1, v2))
 
     parse_helper(None, exp)
     return final_exp[0]
